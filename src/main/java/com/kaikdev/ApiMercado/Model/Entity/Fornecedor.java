@@ -20,4 +20,10 @@ public class Fornecedor {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
+    public Fornecedor(String cnpj, String name, boolean ativo, LocalDateTime createdAt) {
+        this.cnpj = cnpj;
+        this.name = name;
+        this.ativo = ativo;
+        this.createdAt = createdAt;
+    }
 }

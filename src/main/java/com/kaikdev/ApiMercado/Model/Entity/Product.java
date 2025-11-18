@@ -3,8 +3,11 @@ package com.kaikdev.ApiMercado.Model.Entity;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
 @Data
 @Entity
 @NoArgsConstructor
@@ -16,14 +19,25 @@ public class Product {
 
     @Column(nullable = false)
     private String name;
+    @Column(nullable = false)
+   private String categoria;
+    @Column(nullable = false)
+    private String unidade;
 
-    public Product(String name, BigDecimal price) {
+    public Product(LocalDateTime createdAt, Integer estoque_atual, String unidade, String categoria, String name) {
+        this.createdAt = createdAt;
+        this.estoque_atual = estoque_atual;
+        this.unidade = unidade;
+        this.categoria = categoria;
         this.name = name;
-        this.price = price;
     }
 
     @Column(nullable = false)
-    private BigDecimal price;
+    private Integer estoque_atual;
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+
+
 
 
 }

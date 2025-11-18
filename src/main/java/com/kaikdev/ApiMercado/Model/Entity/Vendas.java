@@ -16,6 +16,21 @@ public class Vendas {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
-    private Product productId;
+    private Product product;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fornecedor_id")
+    private Fornecedor fornecedor;
+
+    @Column(nullable = false)
+    private Integer quantidade;
+    @Column(nullable = false)
+    private Double preco_venda;
+    @Column(nullable = false)
+    private Double preco_compra;
+    @Column(nullable = false)
+    private Double margem_lucro;
+
+
 
 }
