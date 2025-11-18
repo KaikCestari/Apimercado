@@ -1,12 +1,17 @@
 package com.kaikdev.ApiMercado.Model.Entity;
 
+import com.kaikdev.ApiMercado.Model.Enum.ReputacaoFornecedor;
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "fornecedor")
+@Data
+@NoArgsConstructor
 public class Fornecedor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,10 +25,14 @@ public class Fornecedor {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    public Fornecedor(String cnpj, String name, boolean ativo, LocalDateTime createdAt) {
+    @Enumerated(EnumType.STRING)
+    private ReputacaoFornecedor reputacaoFornecedor;
+
+    public Fornecedor(String cnpj, String name, boolean ativo, LocalDateTime createdAt, ReputacaoFornecedor reputacaoFornecedor) {
         this.cnpj = cnpj;
         this.name = name;
         this.ativo = ativo;
         this.createdAt = createdAt;
+        this.reputacaoFornecedor = reputacaoFornecedor;
     }
 }
