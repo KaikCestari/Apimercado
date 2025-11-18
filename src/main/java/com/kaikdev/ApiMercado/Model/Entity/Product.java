@@ -1,4 +1,4 @@
-package com.kaikdev.ApiMercado.Model;
+package com.kaikdev.ApiMercado.Model.Entity;
 
 import jakarta.persistence.*;
 import lombok.Data;

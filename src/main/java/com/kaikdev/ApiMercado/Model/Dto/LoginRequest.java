@@ -1,6 +1,5 @@
 package com.kaikdev.ApiMercado.Model.Dto;
 
-import com.kaikdev.ApiMercado.Model.Role;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

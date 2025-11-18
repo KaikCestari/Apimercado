@@ -1,5 +1,6 @@
-package com.kaikdev.ApiMercado.Model;
+package com.kaikdev.ApiMercado.Model.Entity;
 
+import com.kaikdev.ApiMercado.Model.Enum.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

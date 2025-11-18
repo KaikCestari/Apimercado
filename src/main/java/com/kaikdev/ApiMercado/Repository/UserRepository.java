@@ -1,6 +1,6 @@
 package com.kaikdev.ApiMercado.Repository;
 
-import com.kaikdev.ApiMercado.Model.User;
+import com.kaikdev.ApiMercado.Model.Entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

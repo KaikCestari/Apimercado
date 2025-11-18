@@ -1,6 +1,6 @@
 package com.kaikdev.ApiMercado.Controller;
 
-import com.kaikdev.ApiMercado.Model.Product;
+import com.kaikdev.ApiMercado.Model.Entity.Product;
 import com.kaikdev.ApiMercado.Service.ProductService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -15,9 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URI;
 import java.util.List;
 
 @RestController

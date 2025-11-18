@@ -1,6 +1,6 @@
 package com.kaikdev.ApiMercado.Model.Dto;
 
-import com.kaikdev.ApiMercado.Model.Role;
+import com.kaikdev.ApiMercado.Model.Enum.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

@@ -1,4 +1,4 @@
-package com.kaikdev.ApiMercado.Model;
+package com.kaikdev.ApiMercado.Model.Enum;
 
 public enum Role {
     ROLE_ADMIN,

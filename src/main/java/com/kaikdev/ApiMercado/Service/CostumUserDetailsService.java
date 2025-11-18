@@ -1,6 +1,6 @@
 package com.kaikdev.ApiMercado.Service;
 
-import com.kaikdev.ApiMercado.Model.User;
+import com.kaikdev.ApiMercado.Model.Entity.User;
 import com.kaikdev.ApiMercado.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
