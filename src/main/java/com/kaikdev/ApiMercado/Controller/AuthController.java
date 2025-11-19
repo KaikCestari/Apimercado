@@ -4,7 +4,7 @@ import com.kaikdev.ApiMercado.Model.Dto.LoginRequest;
 import com.kaikdev.ApiMercado.Model.Dto.RefreshTokenRequest;
 import com.kaikdev.ApiMercado.Model.Dto.RegisterRequest;
 import com.kaikdev.ApiMercado.Model.Dto.TokenPair;
-import com.kaikdev.ApiMercado.Service.AuthService;
+import com.kaikdev.ApiMercado.Service.Auth.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
