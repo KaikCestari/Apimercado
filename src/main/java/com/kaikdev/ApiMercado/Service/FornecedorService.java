@@ -1,5 +1,6 @@
 package com.kaikdev.ApiMercado.Service;
 
+import com.kaikdev.ApiMercado.Model.Entity.Fornecedor;
 import com.kaikdev.ApiMercado.Repository.FornecedorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -9,4 +10,7 @@ import org.springframework.stereotype.Service;
 public class FornecedorService {
 
     private final FornecedorRepository fornecedorRepository;
-}
+
+
+    }
+
