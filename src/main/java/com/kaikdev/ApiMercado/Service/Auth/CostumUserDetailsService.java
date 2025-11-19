@@ -1,4 +1,4 @@
-package com.kaikdev.ApiMercado.Service;
+package com.kaikdev.ApiMercado.Service.Auth;
 
 import com.kaikdev.ApiMercado.Model.Entity.User;
 import com.kaikdev.ApiMercado.Repository.UserRepository;
