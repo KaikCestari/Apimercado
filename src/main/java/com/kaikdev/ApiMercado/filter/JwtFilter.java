@@ -1,6 +1,6 @@
 package com.kaikdev.ApiMercado.filter;
 
-import com.kaikdev.ApiMercado.Service.Auth.JwtService;
+import com.kaikdev.ApiMercado.service.auth.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
