@@ -14,6 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.Locale;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j // quando for adc log
@@ -45,11 +47,15 @@ public class AdminService {
             throw new ConflictException("Fornecedor já existe para o CNPJ " + dto.getCnpj());
         }
 
+        ReputacaoFornecedor reputacao = dto.getReputacao() != null
+                ? ReputacaoFornecedor.valueOf(dto.getReputacao().toUpperCase(Locale.ROOT))
+                : ReputacaoFornecedor.BOM;
+
         var fornecedor = Fornecedor.builder()
                 .name(dto.getName())
                 .cnpj(dto.getCnpj())
                 .ativo(dto.isAtivo())
-                .reputacaoFornecedor(ReputacaoFornecedor.valueOf(dto.getReputacao()))
+                .reputacaoFornecedor(reputacao)
                 .build();
 
         return fornecedorRepository.save(fornecedor);

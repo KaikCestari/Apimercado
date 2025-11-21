@@ -1,13 +1,20 @@
 package com.kaikdev.ApiMercado.model.Entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "vendas")
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Vendas {
 
     @Id
@@ -30,6 +37,8 @@ public class Vendas {
     private Double preco_compra;
     @Column(nullable = false)
     private Double margem_lucro;
+    @CreationTimestamp
+    private LocalDateTime createdAt;
 
 
 

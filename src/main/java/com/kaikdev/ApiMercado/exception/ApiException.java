@@ -2,9 +2,6 @@ package com.kaikdev.ApiMercado.exception;
 
 import org.springframework.http.HttpStatus;
 
-/**
- * Base runtime exception that stores the HTTP status to be propagated by the handler.
- */
 public abstract class ApiException extends RuntimeException {
 
     private final HttpStatus status;
