@@ -2,10 +2,6 @@ package com.kaikdev.ApiMercado.service;
 
 import com.kaikdev.ApiMercado.exception.BadRequestException;
 import com.kaikdev.ApiMercado.exception.ResourceNotFoundException;
-import com.kaikdev.ApiMercado.model.Dto.EntradaEstoqueRequest;
-import com.kaikdev.ApiMercado.model.Dto.EstoqueProdutoResponse;
-import com.kaikdev.ApiMercado.model.Dto.SaidaEstoqueRequest;
-import com.kaikdev.ApiMercado.model.Entity.EstoqueMovimento;
 import com.kaikdev.ApiMercado.model.Entity.Fornecedor;
 import com.kaikdev.ApiMercado.model.Entity.Product;
 import com.kaikdev.ApiMercado.model.Enum.TipoMovimentoEstoque;
