@@ -4,13 +4,13 @@ import com.kaikdev.Tera.exception.BadRequestException;
 import com.kaikdev.Tera.exception.ConflictException;
 import com.kaikdev.Tera.exception.ResourceNotFoundException;
 import com.kaikdev.Tera.exception.UnauthorizedException;
-import com.kaikdev.Tera.model.Dto.LoginRequest;
-import com.kaikdev.Tera.model.Dto.RefreshTokenRequest;
-import com.kaikdev.Tera.model.Dto.RegisterRequest;
-import com.kaikdev.Tera.model.Dto.TokenPair;
+import com.kaikdev.Tera.model.Dto.*;
+import com.kaikdev.Tera.model.Entity.PasswordResetToken;
 import com.kaikdev.Tera.model.Entity.User;
 import com.kaikdev.Tera.model.Enum.Role;
+import com.kaikdev.Tera.repository.PasswordResetRepository;
 import com.kaikdev.Tera.repository.UserRepository;
+import com.kaikdev.Tera.service.EmailService;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,8 +20,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.Objects;
+import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -30,7 +35,7 @@ public class AuthService {
 
     private final UserRepository userRepository;
 
-    private  final PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
     private final AuthenticationManager authenticationManager;
 
@@ -38,32 +43,41 @@ public class AuthService {
 
     private final UserDetailsService userDetailsService;
 
+    private final PasswordResetRepository passwordResetRepository;
+    private final EmailService emailService;
+
+
     @Transactional
-    public void registerUser(RegisterRequest registerRequest){
-        if(userRepository.existsByUsername(registerRequest.getUsername())) {
+    public void registerUser(RegisterRequest registerRequest) {
+        if (userRepository.existsByUsername(registerRequest.getUsername())) {
             throw new ConflictException("Username já cadastrado");
         }
-            User user = User
-                    .builder()
-                    .email(registerRequest.getEmail())
-                    .fullname(registerRequest.getFullname())
-                    .username(registerRequest.getUsername())
-                    .password(passwordEncoder.encode(registerRequest.getPassword()))
-                    .role(Role.ROLE_USUARIO)
-                    .build();
-        userRepository.save(user);
+        if (userRepository.existsByEmail(registerRequest.getEmail())) {
+            throw new ConflictException("Email já cadastrado");
         }
 
+        User user = User
+                .builder()
+                .email(registerRequest.getEmail())
+                .fullname(registerRequest.getFullname())
+                .username(registerRequest.getUsername())
+                .password(passwordEncoder.encode(registerRequest.getPassword()))
+                .role(Role.ROLE_USUARIO)
+                .build();
+        userRepository.save(user);
+    }
 
-    public TokenPair login(LoginRequest loginRequest){
+
+    public TokenPair login(LoginRequest loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(),loginRequest.getPassword())
+                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        return  jwtService.generateTokenPair(authentication);
+        return jwtService.generateTokenPair(authentication);
 
     }
+
     public TokenPair refreshToken(@Valid RefreshTokenRequest request) {
 
         String refreshToken = request.getRefreshToken();
@@ -93,4 +107,40 @@ public class AuthService {
         return new TokenPair(accessToken, refreshToken);
 
     }
+
+
+    public void forgotPassword(String email) {
+
+        int otp = otpGenerator();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Email invalido"));
+
+        emailService.send(email, "Otp for forgot password", "This is the otp :" + otp);
+
+        PasswordResetToken passwordResetToken = PasswordResetToken.builder()
+                .otp(otp)
+                .expirationDate(LocalDateTime.now().plusMinutes(70 * 30000))
+                .user(user)
+                .build();
+        passwordResetRepository.save(passwordResetToken);
+    }
+
+    private Integer otpGenerator() {
+        Random random = new Random();
+        return random.nextInt(100_000, 999_999);
+    }
+
+    // adicionar validacao para expiracao
+    public void verifyOtp(int otp, String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Please [rovide an valid email!"));
+
+        passwordResetRepository.findByOtpAndUser(otp, user)
+                .orElseThrow(() -> new UsernameNotFoundException("Invalid Otp for email " + email));
+
+    }
+
 }
+
+
+

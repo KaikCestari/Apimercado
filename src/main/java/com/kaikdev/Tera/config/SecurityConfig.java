@@ -33,8 +33,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(
                         req -> req
                                 .requestMatchers("/h2-console/**").permitAll()
-                                .requestMatchers("/admin/**").hasRole("ADMIN")
+                                .requestMatchers("/tera/new-admin/**").hasRole("ADMIN")
                                 .requestMatchers("/auth/**").permitAll()
+                                .requestMatchers("/index.html").permitAll()
                                 .anyRequest().authenticated()).sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .headers(headers -> headers.frameOptions(frame -> frame.disable()))

@@ -89,4 +89,10 @@ public class GlobalExceptionHandler {
         headers.add(HttpHeaders.CONTENT_TYPE, "application/json");
         return ResponseEntity.status(status).headers(headers).body(response);
     }
+    @ExceptionHandler(AdminException.class)
+    public ResponseEntity<AdminErrorResponse> userAdmin(HttpStatus status,String erro){
+        AdminErrorResponse adminErrorResponse = new AdminErrorResponse(HttpStatus.REQUEST_TIMEOUT,"USername invalido falha na request");
+        return ResponseEntity.ok(adminErrorResponse);
+    }
+
 }
