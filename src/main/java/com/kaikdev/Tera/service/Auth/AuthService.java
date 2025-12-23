@@ -113,13 +113,13 @@ public class AuthService {
 
         int otp = otpGenerator();
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Email invalido"));
+                .orElseThrow(() -> new RuntimeException("Email not valid "));
 
         emailService.send(email, "Otp for forgot password", "This is the otp :" + otp);
 
         PasswordResetToken passwordResetToken = PasswordResetToken.builder()
                 .otp(otp)
-                .expirationDate(LocalDateTime.now().plusMinutes(70 * 30000))
+                .expirationDate(LocalDateTime.now().plusMinutes(15))
                 .user(user)
                 .build();
         passwordResetRepository.save(passwordResetToken);
@@ -133,7 +133,7 @@ public class AuthService {
     // adicionar validacao para expiracao
     public void verifyOtp(int otp, String email) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("Please [rovide an valid email!"));
+                .orElseThrow(() -> new UsernameNotFoundException("Please provide an valid email!"));
 
         passwordResetRepository.findByOtpAndUser(otp, user)
                 .orElseThrow(() -> new UsernameNotFoundException("Invalid Otp for email " + email));

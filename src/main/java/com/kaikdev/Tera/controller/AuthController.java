@@ -44,7 +44,7 @@ public class AuthController {
     public ResponseEntity<String> forgotPassword(
             @PathVariable String email) {
         authService.forgotPassword(email);
-        return ResponseEntity.ok("Email Sent for verification!");
+        return ResponseEntity.ok("Email Enviado!");
 
     }
 
