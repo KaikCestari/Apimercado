@@ -1,7 +1,9 @@
 package com.kaikdev.Tera.controller;
 
 import com.kaikdev.Tera.model.Dto.*;
+import com.kaikdev.Tera.model.Entity.PasswordResetToken;
 import com.kaikdev.Tera.model.Entity.User;
+import com.kaikdev.Tera.repository.PasswordResetRepository;
 import com.kaikdev.Tera.repository.UserRepository;
 import com.kaikdev.Tera.service.Auth.AuthService;
 import jakarta.validation.Valid;
@@ -21,6 +23,7 @@ public class AuthController {
     private final AuthService authService;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final PasswordResetRepository passwordResetRepository;
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterRequest registerRequest) {
@@ -48,16 +51,15 @@ public class AuthController {
 
     }
 
-    @PostMapping("/changePassword/{email}")
-    public ResponseEntity<String> changePassword(@RequestBody ChangePassword changePassword, @PathVariable String email) {
-        if (!Objects.equals(changePassword.password(), changePassword.repeatPassword())) {
-            throw new RuntimeException("Senhas nao conferem!");
+    @PostMapping("/changePassword")
+    public ResponseEntity<String> changePassword(
+            @RequestBody ChangePassword dto) {
+
+        if (!dto.password().equals(dto.repeatPassword())) {
+            throw new RuntimeException("Senhas não conferem");
         }
-
-        String encodePassword = passwordEncoder.encode(changePassword.password());
-
-        userRepository.updatePassword(email, encodePassword);
-        return ResponseEntity.ok("Senha Altera Com Sucesso!");
+        authService.changePassword(dto);
+        return ResponseEntity.ok("Senha alterada com sucesso");
     }
 
 

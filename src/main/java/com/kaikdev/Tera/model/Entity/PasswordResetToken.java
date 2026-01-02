@@ -28,5 +28,8 @@ public class PasswordResetToken {
     @OneToOne
     private User user;
 
+    @Column(nullable = false)
+    private boolean verified;
+
 
 }

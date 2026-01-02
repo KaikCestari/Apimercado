@@ -130,15 +130,46 @@ public class AuthService {
         return random.nextInt(100_000, 999_999);
     }
 
-    // adicionar validacao para expiracao
+
     public void verifyOtp(int otp, String email) {
+
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("Please provide an valid email!"));
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
-        passwordResetRepository.findByOtpAndUser(otp, user)
-                .orElseThrow(() -> new UsernameNotFoundException("Invalid Otp for email " + email));
+        PasswordResetToken token = passwordResetRepository
+                .findByOtpAndUser(otp,user)
+                .orElseThrow(() -> new RuntimeException("OTP inválido"));
 
+        if (token.getExpirationDate().isBefore(LocalDateTime.now())) {
+            throw new RuntimeException("OTP expirada");
+        }
+
+        token.setVerified(true);
+        passwordResetRepository.save(token);
     }
+    public void changePassword(ChangePassword dto) {
+
+        User user = userRepository.findByEmail(dto.email())
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        PasswordResetToken token = passwordResetRepository
+                .findByUser(user)
+                .orElseThrow(() -> new RuntimeException("Recuperação não iniciada"));
+
+        if (!token.isVerified()) {
+            throw new RuntimeException("OTP ainda não verificada");
+        }
+
+        if (token.getExpirationDate().isBefore(LocalDateTime.now())) {
+            throw new RuntimeException("Processo expirado");
+        }
+
+        user.setPassword(passwordEncoder.encode(dto.password()));
+        userRepository.save(user);
+
+        passwordResetRepository.delete(token); // invalida
+    }
+
 
 }
 

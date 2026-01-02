@@ -35,7 +35,7 @@ public class SecurityConfig {
                                 .requestMatchers("/h2-console/**").permitAll()
                                 .requestMatchers("/tera/new-admin/**").hasRole("ADMIN")
                                 .requestMatchers("/auth/**").permitAll()
-                                .requestMatchers("/index.html").permitAll()
+                                .requestMatchers("/tera-api/**").permitAll()
                                 .anyRequest().authenticated()).sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .headers(headers -> headers.frameOptions(frame -> frame.disable()))
