@@ -68,6 +68,7 @@ public class AuthController {
         authService.verifyOtp(otp, email);
         return ResponseEntity.ok("Otp verificada");
     }
+
 }
 
 

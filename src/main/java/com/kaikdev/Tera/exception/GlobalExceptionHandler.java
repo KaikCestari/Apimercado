@@ -2,6 +2,8 @@ package com.kaikdev.Tera.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,77 +24,172 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    private static final Logger log =
+            LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+    // 🔹 API EXCEPTION
     @ExceptionHandler(ApiException.class)
-    public ResponseEntity<ApiErrorResponse> handleApiException(ApiException ex, HttpServletRequest request) {
-        return buildResponse(ex.getStatus(), ex.getMessage(), request, null);
+    public ResponseEntity<ApiErrorResponse> handleApiException(
+            ApiException ex,
+            HttpServletRequest request
+    ) {
+        log.warn("Erro de negócio: {}", ex.getMessage());
+
+        return buildResponse(
+                ex.getStatus(),
+                ex.getMessage(),
+                request,
+                null
+        );
     }
 
+    // 🔹 VALIDATION BODY
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiErrorResponse> handleValidation(MethodArgumentNotValidException ex,
-                                                             HttpServletRequest request) {
+    public ResponseEntity<ApiErrorResponse> handleValidation(
+            MethodArgumentNotValidException ex,
+            HttpServletRequest request
+    ) {
         Map<String, String> fieldErrors = new LinkedHashMap<>();
         for (FieldError error : ex.getBindingResult().getFieldErrors()) {
-            fieldErrors.putIfAbsent(error.getField(), error.getDefaultMessage());
+            fieldErrors.putIfAbsent(
+                    error.getField(),
+                    error.getDefaultMessage()
+            );
         }
-        return buildResponse(HttpStatus.BAD_REQUEST, "Erro de validação", request, fieldErrors);
+
+        return buildResponse(
+                HttpStatus.BAD_REQUEST,
+                "Erro de validação",
+                request,
+                fieldErrors
+        );
     }
 
+    // 🔹 VALIDATION PARAM
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ApiErrorResponse> handleConstraintViolation(ConstraintViolationException ex,
-                                                                      HttpServletRequest request) {
+    public ResponseEntity<ApiErrorResponse> handleConstraintViolation(
+            ConstraintViolationException ex,
+            HttpServletRequest request
+    ) {
         Map<String, String> fieldErrors = new LinkedHashMap<>();
-        ex.getConstraintViolations().forEach(violation ->
-                fieldErrors.putIfAbsent(violation.getPropertyPath().toString(), violation.getMessage()));
-        return buildResponse(HttpStatus.BAD_REQUEST, "Erro de validação", request, fieldErrors);
+        ex.getConstraintViolations().forEach(v ->
+                fieldErrors.putIfAbsent(
+                        v.getPropertyPath().toString(),
+                        v.getMessage()
+                )
+        );
+
+        return buildResponse(
+                HttpStatus.BAD_REQUEST,
+                "Erro de validação",
+                request,
+                fieldErrors
+        );
     }
 
-    @ExceptionHandler({HttpMessageNotReadableException.class, MethodArgumentTypeMismatchException.class})
-    public ResponseEntity<ApiErrorResponse> handleMalformedPayload(Exception ex, HttpServletRequest request) {
-        return buildResponse(HttpStatus.BAD_REQUEST, "Corpo da requisição inválido", request, null);
+    // 🔹 JSON / PARAM ERROR
+    @ExceptionHandler({
+            HttpMessageNotReadableException.class,
+            MethodArgumentTypeMismatchException.class
+    })
+    public ResponseEntity<ApiErrorResponse> handleMalformedPayload(
+            Exception ex,
+            HttpServletRequest request
+    ) {
+        log.warn("Payload inválido na rota {}", request.getRequestURI());
+
+        return buildResponse(
+                HttpStatus.BAD_REQUEST,
+                "Corpo da requisição inválido",
+                request,
+                null
+        );
     }
 
+    // 🔹 AUTH
     @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<ApiErrorResponse> handleBadCredentials(BadCredentialsException ex,
-                                                                 HttpServletRequest request) {
-        return buildResponse(HttpStatus.UNAUTHORIZED, "Credenciais inválidas", request, null);
+    public ResponseEntity<ApiErrorResponse> handleBadCredentials(
+            BadCredentialsException ex,
+            HttpServletRequest request
+    ) {
+        return buildResponse(
+                HttpStatus.UNAUTHORIZED,
+                "Credenciais inválidas",
+                request,
+                null
+        );
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ApiErrorResponse> handleAccessDenied(AccessDeniedException ex, HttpServletRequest request) {
-        return buildResponse(HttpStatus.FORBIDDEN, "Acesso negado", request, null);
+    public ResponseEntity<ApiErrorResponse> handleAccessDenied(
+            AccessDeniedException ex,
+            HttpServletRequest request
+    ) {
+        return buildResponse(
+                HttpStatus.FORBIDDEN,
+                "Acesso negado",
+                request,
+                null
+        );
     }
 
     @ExceptionHandler(UsernameNotFoundException.class)
-    public ResponseEntity<ApiErrorResponse> handleUserNotFound(UsernameNotFoundException ex,
-                                                               HttpServletRequest request) {
-        return buildResponse(HttpStatus.NOT_FOUND, ex.getMessage(), request, null);
+    public ResponseEntity<ApiErrorResponse> handleUserNotFound(
+            UsernameNotFoundException ex,
+            HttpServletRequest request
+    ) {
+        return buildResponse(
+                HttpStatus.NOT_FOUND,
+                ex.getMessage(),
+                request,
+                null
+        );
     }
 
+    // 🔥 ERRO GENÉRICO (STACKTRACE AQUI)
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiErrorResponse> handleGeneric(Exception ex, HttpServletRequest request) {
-        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Erro interno no servidor", request, null);
+    public ResponseEntity<ApiErrorResponse> handleGeneric(
+            Exception ex,
+            HttpServletRequest request
+    ) {
+        log.error(
+                "Erro inesperado na rota {}",
+                request.getRequestURI(),
+                ex
+        );
+
+        return buildResponse(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "Erro interno no servidor",
+                request,
+                null
+        );
     }
 
-    private ResponseEntity<ApiErrorResponse> buildResponse(HttpStatus status,
-                                                           String message,
-                                                           HttpServletRequest request,
-                                                           Map<String, String> fieldErrors) {
+    // 🔹 BUILDER
+    private ResponseEntity<ApiErrorResponse> buildResponse(
+            HttpStatus status,
+            String message,
+            HttpServletRequest request,
+            Map<String, String> fieldErrors
+    ) {
         ApiErrorResponse response = new ApiErrorResponse(
                 Instant.now(),
                 status.value(),
                 status.getReasonPhrase(),
                 message,
-                request != null ? request.getRequestURI() : "",
-                (fieldErrors == null || fieldErrors.isEmpty()) ? null : fieldErrors
+                request.getRequestURI(),
+                fieldErrors == null || fieldErrors.isEmpty()
+                        ? null
+                        : fieldErrors
         );
+
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_TYPE, "application/json");
-        return ResponseEntity.status(status).headers(headers).body(response);
-    }
-    @ExceptionHandler(AdminException.class)
-    public ResponseEntity<AdminErrorResponse> userAdmin(HttpStatus status,String erro){
-        AdminErrorResponse adminErrorResponse = new AdminErrorResponse(HttpStatus.REQUEST_TIMEOUT,"USername invalido falha na request");
-        return ResponseEntity.ok(adminErrorResponse);
-    }
 
+        return ResponseEntity
+                .status(status)
+                .headers(headers)
+                .body(response);
+    }
 }

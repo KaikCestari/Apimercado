@@ -1,4 +1,4 @@
 package com.kaikdev.Tera.model.Dto;
 
-public record ChangePassword(String password, String repeatPassword, String email) {
+public record ChangePassword(String password, String repeatPassword, String username) {
 }

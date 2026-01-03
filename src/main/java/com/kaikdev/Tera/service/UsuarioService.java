@@ -2,13 +2,16 @@ package com.kaikdev.Tera.service;
 
 import com.kaikdev.Tera.exception.ResourceNotFoundException;
 import com.kaikdev.Tera.model.Dto.CriarCategoriaRequest;
+import com.kaikdev.Tera.model.Dto.GastosRequest;
 import com.kaikdev.Tera.model.Entity.Categoria;
+import com.kaikdev.Tera.model.Entity.Gastos;
 import com.kaikdev.Tera.model.Entity.User;
 import com.kaikdev.Tera.repository.CategoriaRepository;
+import com.kaikdev.Tera.repository.GastosRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -17,6 +20,8 @@ public class UsuarioService extends User {
 
 
 private final CategoriaRepository categoriaRepository;
+
+private  final GastosRepository gastosRepository;
 
 
 public Categoria criarCategoria(CriarCategoriaRequest criarCategoriaRequest){
@@ -41,6 +46,19 @@ List<Categoria> categorias = categoriaRepository.findAll();
     }
 
 return categorias;
+}
+
+public Gastos adicionarGastos(GastosRequest gastosRequest){
+    if(gastosRequest.valor() == null){
+        throw new RuntimeException("Gastos Null");
+    }
+    Gastos gastos = Gastos.builder()
+            .valor(gastosRequest.valor())
+            .categoria(gastosRequest.categoria())
+            .build();
+
+    return gastosRepository.save(gastos);
+
 }
 
 

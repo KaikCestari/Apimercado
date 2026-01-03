@@ -28,8 +28,12 @@ public class User {
     private String password;
     @Enumerated(EnumType.STRING)
     private Role role;
+
     @OneToOne(mappedBy = "user")
     private PasswordResetToken passwordResetToken;
+
+    @OneToOne
+    private Gastos gastos;
 
     public User(Role role, String password, String username, String fullname,String email) {
         this.role = role;
